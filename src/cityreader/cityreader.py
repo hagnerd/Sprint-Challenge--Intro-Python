@@ -27,6 +27,7 @@ class City:
 cities = []
 
 import csv
+import textwrap
 
 def cityreader(cities=[]):
   # TODO Implement the functionality to read from the 'cities.csv' file
@@ -76,12 +77,46 @@ for c in cities:
 
 # TODO Get latitude and longitude values from the user
 
+def does_coord_fall_between(lat_or_lon, l1, l2):
+    maximum = max([l1, l2])
+    minimum = min([l1, l2])
+    return minimum <= lat_or_lon <= maximum
+
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
-  # within will hold the cities that fall within the specified region
-  within = []
+    # within will hold the cities that fall within the specified region
+    within = []
+    lat1 = float(lat1)
+    lat2 = float(lat2)
+    lon1 = float(lon1)
+    lon2 = float(lon2)
 
-  # TODO Ensure that the lat and lon valuse are all floats
-  # Go through each city and check to see if it falls within 
-  # the specified coordinates.
+    for city in cities:
+        if does_coord_fall_between(city.lat, lat1, lat2) and does_coord_fall_between(city.lon, lon1, lon2):
+            within.append(city)
+    return within
 
-  return within
+
+def get_lat_lon_pair(message):
+    lat_lon = input(message)
+    lat_lon = lat_lon.split(',')
+    if len(lat_lon) != 2:
+        print('Inavlid input\n')
+        get_lat_lon_pair(message)
+    else:
+        return (float(lat_lon[0]), float(lat_lon[1]))
+
+def inital_instructions():
+    print('\n'.join(textwrap.wrap("""We will ask you for two latitude and longitude pairs and return a
+list of all cities that with populations over 750,000 that fall within those
+                        longitudes and lattitudes""", 80)))
+
+def main():
+    global cities
+    inital_instructions()
+    lat1, lon1 = get_lat_lon_pair('Enter the first latitude and longitude pair separated by a comma: \n')
+    lat2, lon2 = get_lat_lon_pair('Enter the second latitude and longitude pair separated by a comma: \n')
+    print(f"Finding all cities between {lat1}, {lon1} and {lat2}, {lon2}")
+    for city in cityreader_stretch(lat1, lon1, lat2, lon2, cities):
+        print(city)
+
+main()
